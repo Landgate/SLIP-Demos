@@ -17,7 +17,7 @@
     var vectorLayer = new ol.layer.Vector({
       source: new ol.source.GeoJSON({
         projection: 'EPSG:3857',
-        url: 'https://www.googleapis.com/mapsengine/v1/tables/06151154151057343427-08085839894183591940/features?version=published&key=AIzaSyDB3manTIJORPPJL06pKafXmO_KxPPKysE&maxResults=1000'
+        url: 'https://www.googleapis.com/mapsengine/v1/tables/06151154151057343427-08085839894183591940/features?version=published&key=AIzaSyDB3manTIJORPPJL06pKafXmO_KxPPKysE&select=Tot_P_P,AREA_SQKM,SSC_NAME,geometry&maxResults=1000'
       }),
       style: function(feature, resolution) {
         var colour = 255 - Math.round(feature.get('Tot_P_P') / feature.get('AREA_SQKM') / 15);
