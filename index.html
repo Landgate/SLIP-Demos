@@ -1,79 +1,152 @@
-<!DOCTYPE html>
-<html>
+<!doctype html> <html ng-app="mapApp" ng-controller="AppCtrl" ng-init="init()" class="no-js"> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes"> <title>{{mapTree.name}} - SLIP POC Viewer</title> <meta name="description" content=""> <!-- Polymer --> <!-- 1. Load platform.js for polyfill support. --> <!-- <script src="bower_components/platform/platform.js"></script> --> <!-- 2. Use an HTML Import to bring in the element. --> <!-- <link rel="import" href="http://www.polymer-project.org/components/core-icons/core-icons.html"> --> <link rel="import" href="http://www.polymer-project.org/components/google-map/google-map.html"> <!-- 3. Custom Elements --> <polymer-element name="my-google-map" extends="google-map"> <script>Polymer({
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Slip-demos : " />
+          // mapApiLoaded: function() {
+            // console.log("mapApiLoaded");
+            // console.log(this.super);
+          // },
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+          getMapOptions: function() {
+            var mapOptions = this.super();
+            mapOptions["streetViewControl"] = false;
+            mapOptions["panControl"] = false;
+            mapOptions["zoomControlOptions"] = {
+              style: google.maps.ZoomControlStyle.SMALL,
+              position: google.maps.ControlPosition.RIGHT_BOTTOM
+            };
+            return mapOptions;
+          },
 
-    <title>Slip-demos</title>
-  </head>
+          getMap: function() {
+            return this.map;
+          },
 
-  <body>
+          getMapControls: function() {
+            return this.map.controls;
+          }
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/Landgate/SLIP-Demos">View on GitHub</a>
+        });</script> <template> <style>:host {
+            position: relative;
+          }
 
-          <h1 id="project_title">Slip-demos</h1>
-          <h2 id="project_tagline"></h2>
+          #map {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+          }
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/Landgate/SLIP-Demos/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/Landgate/SLIP-Demos/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+          .gm-style-iw {
+            font-family: Roboto;
+            font-size: smaller;
+          }
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+          #pac-input {
+            background-color: #fff;
+            padding: 0 11px 0 13px;
+            width: 200px;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            text-overflow: ellipsis;
+            margin-left: 10px;
+            margin-top: 10px;
+          }
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+          #pac-input:focus {
+            border-color: #4d90fe;
+            margin-left: 9px;
+            padding-left: 14px;  /* Regular padding-left + 1. */
+            width: 401px;
+          }
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+          .pac-container {
+            font-family: Roboto;
+          }</style> <google-maps-api apikey="{{apiKey}}" version="{{version}}" on-api-load="{{mapApiLoaded}}" libraries="{{libraries}}"></google-maps-api> <div id="map"></div> <content id="markers" select="google-map-marker"></content> </template> </polymer-element> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel="stylesheet" href="styles/vendor.5ca49359.css"> <link rel="stylesheet" href="styles/main.1079d888.css">  <!-- <body ng-app="mapApp"> --> <body fullbleed vertical layout> <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]--> <section layout="horizontal" flex> <md-sidenav class="md-sidenav-left md-whiteframe-z2" component-id="left"> <md-toolbar class="md-theme-indigo"> <h1 class="md-toolbar-tools">{{mapTree.name}}</h1> </md-toolbar> <div> <md-content class="md-content-padding" style="overflow-y: scroll; padding-top: 70px" fit> <md-button class="md-fab" aria-label="Time"> <md-icon icon="https://material.angularjs.org/img/icons/ic_people_24px.svg" style="width: 24px; height: 24px"></md-icon> </md-button> <div ng-bind-html="mapTree.description" class="map-description"></div> <div id="map-tree-panel"> <map-tree family="mapTree.contents"> </map-tree> </div> </md-content> </div> </md-sidenav> <md-content flex class="md-content-padding"> <div layout="vertical" layout-fill layout-align="center center"> <my-google-map libraries="visualization,places" latitude="-25.779" longitude="120" zoom="5" minzoom="4" maxzoom="20" fit> <input id="pac-input" class="controls" type="text" placeholder="Enter a location"> </my-google-map> <script>var map = document.querySelector('my-google-map');
+          map.addEventListener('google-map-ready', function(e) {
+            // Create the search box and link it to the UI element.
+            var map = document.querySelector('my-google-map');
+            var input = /** @type {HTMLInputElement} */(
+                document.getElementById('pac-input'));
+            console.log(input);
+            map.getMapControls()[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+            var searchBox = new google.maps.places.SearchBox(
+              /** @type {HTMLInputElement} */(input));
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+            // Listen for the event fired when the user selects an item from the
+            // pick list. Retrieve the matching places for that item.
+            google.maps.event.addListener(searchBox, 'places_changed', function() {
+              var places = searchBox.getPlaces();
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+              if (places.length == 0) {
+                return;
+              }
+              markers = [];
+              for (var i = 0, marker; marker = markers[i]; i++) {
+                marker.setMap(null);
+              }
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+              // For each place, get the icon, place name, and location.
+              var bounds = new google.maps.LatLngBounds();
+              for (var i = 0, place; place = places[i]; i++) {
+                var image = {
+                  url: place.icon,
+                  size: new google.maps.Size(71, 71),
+                  origin: new google.maps.Point(0, 0),
+                  anchor: new google.maps.Point(17, 34),
+                  scaledSize: new google.maps.Size(25, 25)
+                };
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+                // Create a marker for each place.
+                var marker = new google.maps.Marker({
+                  map: map.map,
+                  icon: image,
+                  title: place.name,
+                  position: place.geometry.location
+                });
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+                markers.push(marker);
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-    </div>
+                bounds.extend(place.geometry.location);
+              }
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Slip-demos maintained by <a href="https://github.com/Landgate">Landgate</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+              map.map.fitBounds(bounds);
+            });
 
-    
+            // Bias the SearchBox results towards places that are within the bounds of the
+            // current map's viewport.
+            google.maps.event.addListener(map, 'bounds_changed', function() {
+              var bounds = map.getBounds();
+              searchBox.setBounds(bounds);
+            });
+          });</script> </div> </md-content> </section> <!-- Add your site or application content here --> <!-- <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a ng-href="#">Home</a></li>
+          <li><a ng-href="#/about">About</a></li>
+          <li><a ng-href="#">Contact</a></li>
+        </ul>
+        <h3 class="text-muted">map</h3>
+      </div>
 
-  </body>
-</html>
+      <div ng-view=""></div>
+
+      <div class="footer">
+        <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+      </div>
+    </div> --> <!-- Google Analytics: change UA-XXXXX-X to be your site's ID --> <!-- <script>
+       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+       ga('create', 'UA-XXXXX-X');
+       ga('send', 'pageview');
+    </script> --> <!--[if lt IE 9]>
+    <script src="scripts/oldieshim.a466b7b1.js"></script>
+    <![endif]--> <script src="scripts/vendor.dd86871a.js"></script> <script src="scripts/scripts.528a9708.js"></script>  
